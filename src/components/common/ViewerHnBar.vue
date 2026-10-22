@@ -1,10 +1,10 @@
 <template>
-  <div class="viewer-hn-bar flex items-center gap-2">
+  <div class="viewer-hn-bar flex items-center gap-3">
     <!-- Patient info (when selected) -->
-    <div v-if="patientStore.viewerPatient" class="flex items-center gap-2 text-gray-700">
+      <div v-if="patientStore.viewerPatient" class="viewer-current-patient flex items-center gap-3 text-gray-700">
       <div class="flex flex-col leading-tight">
-        <span class="text-xs font-semibold text-[#1a4f7a]">{{ patientStore.viewerPatient.NAME?.trim() }}</span>
-        <span class="text-[10px] text-gray-400">HN: {{ patientStore.viewerLastHn }}</span>
+        <span class="text-sm font-semibold text-[#17324d]">{{ patientStore.viewerPatient.NAME?.trim() }}</span>
+        <span class="text-xs text-gray-500">HN: {{ patientStore.viewerLastHn }}</span>
       </div>
       <!-- ปุ่ม clear — ซ่อนใน OCS mode (กันหลุด ปิดได้อย่างเดียว) -->
       <button v-if="!authStore.ocsMode" class="text-gray-400 hover:text-red-500 transition-colors" @click="clearViewer" title="ล้างผู้ป่วย">
@@ -21,19 +21,19 @@
           type="text"
           :maxlength="8"
           :placeholder="patientStore.hnConfig.hnSep === 'Y' ? 'ปี+HN' : 'HN 8 หลัก'"
-          class="form-input text-xs py-1 w-32 font-mono"
+          class="form-input text-sm w-40 font-mono viewer-hn-input"
           :class="notFound ? 'border-red-400' : ''"
           @keydown.enter.prevent="onEnter"
         />
         <template v-if="patientStore.hnConfig.hnSep === 'Y'">
           <span class="text-gray-400 text-xs">-</span>
           <input v-model="yearValue" type="text" maxlength="2" readonly tabindex="-1"
-            class="form-input text-xs py-1 w-10 font-mono bg-gray-50" />
+            class="form-input text-sm w-14 font-mono bg-gray-50 viewer-hn-year" />
         </template>
-        <button class="btn-outline px-2 py-1 text-xs gap-1 whitespace-nowrap" @click="showSearch = true" title="ค้นหา">
+        <button class="btn-outline px-3 text-sm gap-1 whitespace-nowrap viewer-hn-action" @click="showSearch = true" title="ค้นหา">
           <i class="bi bi-person-search" /> ค้นหา
         </button>
-        <button v-if="patientStore.recentPatient" class="btn-outline px-2 py-1 text-xs gap-1 whitespace-nowrap" @click="onPatientSelected(patientStore.recentPatient)">
+        <button v-if="patientStore.recentPatient" class="btn-outline px-3 text-sm gap-1 whitespace-nowrap viewer-hn-action" @click="onPatientSelected(patientStore.recentPatient)">
           <i class="bi bi-clock-history" /> ล่าสุด
         </button>
       </div>
@@ -225,7 +225,10 @@ function formatDate(d: string) {
 <style scoped>
 .treat-th { background: #1a4f7a; color: white; padding: 0.55rem 0.6rem; text-align: left; font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
 .treat-td { padding: 0.45rem 0.6rem; border-bottom: 1px solid #f3f4f6; font-size: 0.875rem; }
-.viewer-hn-bar .form-input { font-size: .9375rem; }
+.viewer-hn-bar { flex-wrap: wrap; }
+.viewer-hn-bar .form-input { min-height: 44px; font-size: 15px; }
+.viewer-hn-bar .viewer-hn-action { min-height: 44px; }
+.viewer-current-patient { padding-right: 12px; border-right: 1px solid #dce7f0; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

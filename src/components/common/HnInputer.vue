@@ -1,12 +1,12 @@
 <template>
-  <div class="hn-inputer flex gap-2 items-center">
+  <div class="hn-inputer flex flex-wrap gap-2 items-center">
     <input
       ref="mainInput"
       v-model="mainValue"
       type="text"
       :maxlength="isSep ? 8 : 8"
       :placeholder="isSep ? 'พิมพ์ปี+HN แล้วกด Enter' : '8 หลัก'"
-      class="form-input font-mono tracking-wide"
+      class="form-input font-mono tracking-wide hn-main-input"
       :class="{ 'flex-[3]': isSep }"
       @keydown.enter.prevent="onEnter"
     />
@@ -19,7 +19,7 @@
         placeholder="ปี"
         readonly
         tabindex="-1"
-        class="form-input font-mono flex-1 bg-gray-50"
+        class="form-input font-mono flex-1 bg-gray-50 hn-year-input"
       />
     </template>
     <button
@@ -128,3 +128,12 @@ function resetSilent() {
 
 defineExpose({ setValue, clear, resetSilent, hnValue })
 </script>
+
+<style scoped>
+.hn-inputer { width: 100%; }
+.hn-inputer :deep(.form-input) { min-height: 44px; font-size: 15px; }
+.hn-main-input { min-width: 150px; flex: 1 1 180px; }
+.hn-year-input { max-width: 86px; }
+.hn-inputer :deep(button) { min-height: 44px; white-space: nowrap; }
+@media (max-width: 640px) { .hn-inputer :deep(button) { flex: 1 1 auto; justify-content: center; } }
+</style>

@@ -3,7 +3,7 @@
     <div
       v-if="patient"
         :class="[
-        'flex items-center gap-3 px-3 py-2 rounded-lg border text-sm mt-2',
+        'flex items-center gap-3 px-4 py-3 rounded-xl border text-[15px] mt-3',
         notFound
           ? 'bg-red-50 border-red-200 text-red-700'
           : 'bg-blue-50 border-blue-200 text-blue-800'
@@ -16,7 +16,7 @@
         </template>
         <template v-else>
           <div class="font-semibold">{{ patient.NAME }}</div>
-          <div class="text-xs text-gray-500">
+          <div class="text-sm text-gray-600 mt-0.5">
             HN: {{ patient.PATID.trim() }} &nbsp;|&nbsp; อายุ: {{ age }}
           </div>
         </template>

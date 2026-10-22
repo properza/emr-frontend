@@ -4,6 +4,7 @@
     title="Detail Master"
     icon="bi-table"
     width="920px"
+    :embedded="embedded"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- TabTyp dropdown -->
@@ -201,7 +202,7 @@ import api from '@/services/api'
 import { useDialog } from '@/composables/useDialog'
 const { alert: dlgAlert, confirm: dlgConfirm } = useDialog()
 
-const props = defineProps<{ modelValue: boolean }>()
+const props = defineProps<{ modelValue: boolean; embedded?: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 // ── State ─────────────────────────────────────────────────────

@@ -4,6 +4,7 @@
     title="User Management"
     icon="bi-people"
     width="820px"
+    :embedded="embedded"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Toolbar -->
@@ -212,7 +213,7 @@ import api, { clinicApi } from '@/services/api'
 import { useDialog } from '@/composables/useDialog'
 const { alert: dlgAlert, confirm: dlgConfirm } = useDialog()
 
-const props = defineProps<{ modelValue: boolean }>()
+const props = defineProps<{ modelValue: boolean; embedded?: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 watch(() => props.modelValue, v => {

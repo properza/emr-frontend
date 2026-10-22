@@ -1,9 +1,9 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="embedded">
     <Transition name="fade">
-      <div v-if="modelValue" class="fixed inset-0 z-[9000] flex items-center justify-center">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="$emit('update:modelValue', false)" />
-        <div class="relative bg-white rounded-xl shadow-2xl flex flex-col" style="width:1000px;max-height:90vh;">
+      <div v-if="modelValue" :class="embedded ? 'emr-form-embedded' : 'fixed inset-0 z-[9000] flex items-center justify-center'">
+        <div v-if="!embedded" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="$emit('update:modelValue', false)" />
+        <div class="relative bg-white rounded-xl shadow-2xl flex flex-col" :style="embedded ? 'width:100%;max-height:none' : 'width:min(1000px, calc(100vw - 24px));max-height:90vh'">
 
           <!-- Header -->
           <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-100 flex-shrink-0">
@@ -202,7 +202,7 @@ import { useDialog } from '@/composables/useDialog'
 import EMRCombobox from '@/components/common/EMRCombobox.vue'
 import type { ComboOption } from '@/components/common/EMRCombobox.vue'
 
-const props = defineProps<{ modelValue: boolean }>()
+const props = defineProps<{ modelValue: boolean; embedded?: boolean }>()
 const emit  = defineEmits(['update:modelValue'])
 const { alert: dlgAlert, confirm: dlgConfirm } = useDialog()
 

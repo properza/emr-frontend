@@ -4,6 +4,7 @@
     title="Program Configuration"
     icon="bi-gear"
     width="680px"
+    :embedded="embedded"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div class="flex gap-2 mb-4">
@@ -86,7 +87,7 @@ import api from '@/services/api'
 import { useDialog } from '@/composables/useDialog'
 const { alert: dlgAlert, confirm: dlgConfirm } = useDialog()
 
-const props = defineProps<{ modelValue: boolean }>()
+const props = defineProps<{ modelValue: boolean; embedded?: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 const search = ref('')

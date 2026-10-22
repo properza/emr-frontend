@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2 items-center">
+  <div class="hn-inputer flex gap-2 items-center">
     <input
       ref="mainInput"
       v-model="mainValue"
@@ -39,16 +39,21 @@
       <i class="bi bi-person-search" />
       ค้นหา
     </button>
+    <button v-if="searchable && recentPatient" type="button" class="btn-outline px-3 gap-1 whitespace-nowrap" @click="emit('recent')">
+      <i class="bi bi-clock-history" /> ผู้ป่วยล่าสุด
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import type { Patient } from '@/types'
 
 const props = withDefaults(defineProps<{
   isSep: boolean
   modelValue?: string
   searchable?: boolean
+  recentPatient?: Patient | null
 }>(), {
   searchable: true,
 })
@@ -58,6 +63,7 @@ const emit = defineEmits<{
   'search': [hn: string]
   'open-search': []
   'clear': []
+  'recent': []
 }>()
 
 const mainInput = ref<HTMLInputElement>()
@@ -77,8 +83,16 @@ const hnValue = computed(() => {
   return hn ? hn.padStart(8, ' ') : ''
 })
 
+watch(() => [props.modelValue, props.isSep] as const, ([value]) => {
+  if (value === hnValue.value) return
+  if (!value) resetSilent()
+  else setValue(value)
+}, { immediate: true })
+
+watch(hnValue, value => emit('update:modelValue', value))
+
 function onEnter() {
-  if (props.isSep && mainValue.value.length >= 3) {
+  if (props.isSep && !yearValue.value && mainValue.value.length >= 3) {
     // split 2 หลักแรกเป็นปี
     yearValue.value = mainValue.value.substring(0, 2)
     mainValue.value = mainValue.value.substring(2)

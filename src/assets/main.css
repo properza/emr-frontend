@@ -1,5 +1,12 @@
 @import "tailwindcss";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+@import "@fontsource/poppins/latin-400.css";
+@import "@fontsource/poppins/latin-500.css";
+@import "@fontsource/poppins/latin-600.css";
+@import "@fontsource/kanit/thai-400.css";
+@import "@fontsource/kanit/thai-500.css";
+@import "@fontsource/kanit/thai-600.css";
+@import "sweetalert2/dist/sweetalert2.min.css";
 
 /* ==========================================================================
    EMR Design Tokens (base palette #2563a8)
@@ -7,12 +14,14 @@
    .btn-primary / .btn-outline / .card-header ชี้ token แล้ว — เปลี่ยนที่ :root ที่เดียว
    ========================================================================== */
 :root {
+  font-family: 'Poppins', 'Kanit', sans-serif;
+  font-size: 16px;
   /* Primary (ฐาน #2563a8) */
-  --cis-primary:        #2563a8;
-  --cis-primary-hover:  #1d4d85;   /* เข้มลง ~12% สำหรับ hover/gradient ปลายเข้ม */
-  --cis-primary-light:  #3b7dc9;   /* สว่างขึ้น สำหรับ gradient ปลายอ่อน */
-  --cis-primary-soft:   #e3edf7;   /* focus ring / selected row tint */
-  --cis-primary-strong: #17385f;   /* ข้อความ/ขอบเข้มพิเศษ */
+  --cis-primary:        #155e9a;
+  --cis-primary-hover:  #124a78;
+  --cis-primary-light:  #1689ad;
+  --cis-primary-soft:   #e4f4f8;
+  --cis-primary-strong: #123753;
 
   /* Neutral คู่ contrast */
   --cis-white:          #ffffff;
@@ -24,7 +33,7 @@
   --cis-text-muted:     #64748b;
 
   /* Surfaces */
-  --cis-bg-app:         #f5f7fa;
+  --cis-bg-app:         #f1f6fa;
   --cis-bg-surface:     #ffffff;
   --cis-bg-subtle:      #eef2f7;
 
@@ -55,9 +64,14 @@
 /* ── Form controls ── */
 .form-input {
   @apply w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100;
+  min-height: 42px;
 }
+.hn-inputer { flex-wrap: wrap; min-width: 0; }
+.hn-inputer > input:first-of-type { flex: 1 1 130px; min-width: 90px; font-size: .9375rem; }
+.hn-inputer > button { flex: 0 0 auto; }
 .form-select {
   @apply w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 bg-white;
+  min-height: 42px;
 }
 .form-label {
   @apply block text-xs font-semibold text-gray-500 mb-1;
@@ -67,12 +81,14 @@
 .btn-primary {
   @apply inline-flex items-center gap-1 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   background: var(--cis-primary);
+  min-height: 40px;
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--cis-primary-light);
 }
 .btn-outline {
   @apply inline-flex items-center gap-1 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors;
+  min-height: 40px;
 }
 .btn-outline:hover {
   border-color: var(--cis-primary);
@@ -106,7 +122,7 @@
 /* ── Tables ── */
 .result-table { @apply w-full text-sm border-collapse; }
 .result-table th { @apply bg-gray-50 px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200; }
-.result-table td { @apply px-3 py-2.5 border-b border-gray-100; }
+.result-table td { @apply px-3 py-2.5 border-b border-gray-100; font-size: 0.875rem; }
 .result-table tr.clickable:hover td { @apply bg-blue-50 cursor-pointer; }
 .result-table tr.selected td { @apply bg-blue-100; }
 
@@ -120,3 +136,36 @@
 .loading-spinner { @apply inline-block w-5 h-5 border-2 border-gray-200 border-t-sky-400 rounded-full animate-spin; }
 .badge-form { @apply inline-block bg-sky-100 text-sky-700 text-xs font-medium px-2 py-0.5 rounded; }
 .badge-page { @apply inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded; }
+
+html, body, #app { min-height: 100%; }
+body { margin: 0; background: var(--cis-bg-app); color: var(--cis-text-primary); font-family: 'Poppins', 'Kanit', sans-serif; font-size: 1rem; }
+button, input, select, textarea { font: inherit; }
+button:not([class*="w-"]):not([class*="h-"]) { min-height: 40px; }
+input, select, textarea { font-size: 0.9rem; }
+table { color: var(--cis-text-primary); }
+.text-xs { font-size: 0.8125rem !important; }
+[class*="text-[9px]"], [class*="text-[10px]"], [class*="text-[11px]"] { font-size: 0.75rem !important; }
+.emr-swal-popup { z-index: 100000 !important; font-family: 'Poppins', 'Kanit', sans-serif !important; border-radius: 16px !important; }
+.emr-swal-confirm { background: var(--cis-primary) !important; border-radius: 9px !important; }
+.emr-swal-cancel { border-radius: 9px !important; }
+.swal2-container { z-index: 100000 !important; }
+.viewer-workspace .card-header { min-height: 48px; font-size: .95rem; color: #123753; }
+.viewer-workspace table th { font-size: .8rem; }
+.viewer-workspace table td { font-size: .875rem; }
+.viewer-workspace button, .viewer-workspace select { min-height: 38px; }
+
+@media (max-width: 760px) {
+  .result-table { min-width: 600px; }
+}
+@media (max-width: 1050px) {
+  .viewer-workspace { height: auto; min-height: calc(100vh - 190px); }
+  .viewer-workspace > .flex { height: auto; flex: initial; flex-direction: column; }
+  .viewer-workspace > .flex > .card { width: 100%; max-height: 42vh; }
+  .scan-workspace { height: auto !important; min-height: calc(100vh - 190px); grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
+  .scan-workspace > * { grid-column: 1 !important; grid-row: auto !important; }
+  .scan-workspace > .card { min-height: 300px; }
+  .scan-workspace .hn-inputer { gap: .4rem; }
+  .scan-workspace .hn-inputer > button { min-height: 38px; padding-inline: .65rem; }
+  .viewer-print-workspace { flex-direction: column; height: auto; }
+  .viewer-print-workspace > .card.w-80 { width: 100%; max-height: 40vh; }
+}

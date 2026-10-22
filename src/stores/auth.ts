@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/services/api'
+import { usePatientStore } from '@/stores/patient'
 
 export interface AuthUser {
   userId: string
@@ -30,6 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(userId: string, password: string) {
     const res = await api.post('/auth/login', { userId, password })
+    usePatientStore().clearPatientContext()
     token.value = res.data.token
     user.value = {
       userId: res.data.userId,
@@ -49,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function ocsLaunch(params: {
     patId: string; userId: string; clinCode: string; inDate: string; ocmNum: string
   }): Promise<any> {
+    usePatientStore().clearPatientContext()
     const res = await api.post('/auth/ocs-launch', params)
     token.value = res.data.token
     user.value = {
@@ -69,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    usePatientStore().clearPatientContext()
     token.value = null
     user.value = null
     ocsMode.value = false

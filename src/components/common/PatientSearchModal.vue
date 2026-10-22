@@ -25,9 +25,10 @@
       <div v-if="searchField === 'PATID'" class="flex-1">
         <HnInputer
           ref="hnInputer"
+          v-model="store.searchKeyword"
           :is-sep="store.hnConfig.hnSep === 'Y'"
           @search="onHnSearch"
-          @open-search="() => {}"
+          @open-search="searchHnInput"
         />
       </div>
 
@@ -45,6 +46,12 @@
           <i class="bi bi-search" /> ค้นหา
         </button>
       </template>
+    </div>
+
+    <div class="flex justify-end -mt-2 mb-3">
+      <button type="button" class="text-sm font-semibold text-sky-800 hover:text-cyan-700" @click="backToList">
+        <i class="bi bi-people mr-1" />แสดงผู้ป่วยทั้งหมด
+      </button>
     </div>
 
     <!-- Results -->
@@ -132,9 +139,9 @@ const emit = defineEmits<{
 }>()
 
 const store = usePatientStore()
-const searchField = ref('PATID')
-const keyword = ref('')
-const searched = ref(false)
+const searchField = computed({ get: () => store.searchField, set: v => { store.searchField = v } })
+const keyword = computed({ get: () => store.searchKeyword, set: v => { store.searchKeyword = v } })
+const searched = computed({ get: () => store.searchMode, set: v => { store.searchMode = v } })
 const showAdd = ref(false)
 const kwInput = ref<HTMLInputElement>()
 const hnInputer = ref<InstanceType<typeof HnInputer>>()
@@ -171,9 +178,8 @@ function formatHn(patid: string) {
 // เปิด modal → โหลดหน้าแรกของ list ทั้งหมด
 watch(() => props.modelValue, (open) => {
   if (open) {
-    searched.value = false
-    store.clearSearch()
-    store.loadPatientPage(0)
+    if (searched.value && store.searchKeyword) store.searchPatient(store.searchField, store.searchKeyword)
+    else if (store.listResults.length === 0) store.loadPatientPage(0)
   }
 })
 
@@ -197,6 +203,10 @@ async function onHnSearch(hn: string) {
   searched.value = true
 }
 
+function searchHnInput() {
+  void onHnSearch(store.searchKeyword)
+}
+
 async function doSearch() {
   if (!keyword.value.trim()) { backToList(); return }
   await store.searchPatient(searchField.value, keyword.value)
@@ -206,7 +216,9 @@ async function doSearch() {
 // กลับสู่โหมด list ทั้งหมด (เมื่อล้างคำค้น)
 function backToList() {
   store.clearSearch()
+  keyword.value = ''
   searched.value = false
+  hnInputer.value?.resetSilent()
   if (store.listResults.length === 0) store.loadPatientPage(0)
 }
 
@@ -214,11 +226,6 @@ function select(patient: Patient) {
   store.selectPatient(patient)
   emit('selected', patient)
   emit('update:modelValue', false)
-  store.clearSearch()
-  store.clearList()
-  keyword.value = ''
-  hnInputer.value?.resetSilent()
-  searched.value = false
 }
 
 function calcAge(birthDate: string) {

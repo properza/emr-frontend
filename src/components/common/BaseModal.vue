@@ -13,11 +13,11 @@
 
         <!-- Panel -->
         <div
-          class="relative bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden"
-          :style="{ width, maxHeight: '90vh' }"
+          class="emr-modal-panel relative bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          :style="{ width: `min(${width}, calc(100vw - 24px))`, maxHeight: '90dvh' }"
         >
           <!-- Header -->
-          <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-100 shrink-0">
+          <div class="emr-modal-header flex items-center gap-2 px-5 py-3 border-b border-gray-100 shrink-0">
             <i v-if="icon" :class="['bi', icon, 'text-blue-800']" />
             <span class="font-semibold text-blue-900 text-sm">{{ title }}</span>
             <div class="ml-auto flex items-center gap-2">
@@ -81,6 +81,10 @@ function onBackdropUp() {
 </script>
 
 <style scoped>
+.emr-modal-panel { border: 1px solid #dce8ef; border-radius: 16px; box-shadow: 0 24px 80px rgba(12,45,68,.2); }
+.emr-modal-header { min-height: 58px; background: linear-gradient(180deg, #f4f9fb, #fff); }
+.emr-modal-header > span { font-size: .95rem; color: #123753; }
+.emr-modal-panel :deep(.form-input), .emr-modal-panel :deep(.form-select) { min-height: 42px; }
 .modal-enter-active, .modal-leave-active { transition: all 0.2s ease; }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
 .modal-enter-from .relative, .modal-leave-to .relative { transform: scale(0.96) translateY(8px); }

@@ -7,7 +7,7 @@
     <!-- ===== ซ้าย: Hero (วางทับ background ตรงๆ) ===== -->
     <div class="login-hero">
       <div class="hero-content">
-        <img src="/logo.jpg" class="hero-logo" alt="EMR" />
+        <img src="/logo.png" class="h-18" alt="EMR" />
         <h1 class="hero-title">EMR Document System</h1>
         <p class="hero-subtitle">Scan Center</p>
         <div class="hero-divider" />
@@ -33,8 +33,8 @@
         <!-- ฟอร์ม login (fade ออกเมื่อสำเร็จ) -->
         <transition name="content-fade">
           <div v-if="!loginSuccess" class="card-content stage-layer">
-            <div class="card-logo-wrap">
-              <img src="/logo.jpg" class="card-logo" alt="EMR" />
+            <div class="flex justify-center mb-4 ">
+              <img src="/logo.png" class="h-18 shadow-lg" alt="EMR" />
             </div>
             <h2 class="card-title">EMR Document System</h2>
             <p class="card-subtitle">กรุณาเข้าสู่ระบบ</p>
@@ -224,8 +224,6 @@ function onSso() {
   text-shadow: 0 1px 3px rgba(0,0,0,0.35);
 }
 .hero-logo {
-  width: 64px;
-  height: 64px;
   border-radius: 16px;
   object-fit: cover;
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -552,5 +550,23 @@ function onSso() {
 @media (max-width: 900px) {
   .login-page { grid-template-columns: 1fr; }
   .login-hero { display: none; }
+}
+.login-page { background-color: #0e2942; background-image: linear-gradient(135deg, #103653 0%, #155e9a 54%, #12a2b8 100%); }
+.login-hero { position: relative; min-height: 100vh; background: linear-gradient(145deg, rgba(10,37,61,.2), rgba(8,28,47,.72)); }
+.login-hero::before { content: ''; position: absolute; width: 28rem; height: 28rem; border-radius: 50%; right: -8rem; top: 8%; background: radial-gradient(circle, rgba(110,231,245,.18), transparent 70%); pointer-events: none; }
+.hero-content { position: relative; max-width: 560px; }
+.login-panel { min-height: 100vh; background: linear-gradient(135deg, rgba(239,248,252,.96), #fff 64%); }
+.login-card { max-width: 440px; padding: 44px; border-color: rgba(255,255,255,.9); border-radius: 22px; box-shadow: 0 28px 72px rgba(8,42,67,.18), 0 4px 14px rgba(8,42,67,.08); }
+.card-title { color: #123753; }
+.card-subtitle { color: #1689ad; }
+.input-control { height: 50px; border-color: #d6e2ea; }
+.input-control:focus { border-color: #1689ad; box-shadow: 0 0 0 3px rgba(22,137,173,.13); }
+.btn-login { height: 50px; background: linear-gradient(100deg, #155e9a, #1689ad); box-shadow: 0 8px 20px rgba(21,94,154,.22); }
+.btn-login:hover:not(:disabled) { background: linear-gradient(100deg, #124a78, #0c7898); }
+@media (max-width: 900px) {
+  .login-page { grid-template-columns: 1fr; min-height: 100dvh; }
+  .login-hero { display: none; }
+  .login-panel { min-height: 100dvh; padding: 24px; background: linear-gradient(145deg, #eaf5fa, #fff 70%); }
+  .login-card { padding: clamp(24px, 7vw, 40px); }
 }
 </style>

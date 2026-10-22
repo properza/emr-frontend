@@ -212,7 +212,7 @@
     </Transition>
   </Teleport>
 
-  <div class="flex flex-col h-[calc(100vh-115px)]">
+  <div class="viewer-workspace flex flex-col h-[calc(100vh-115px)]">
     <div class="flex gap-3 flex-1 min-h-0 h-full">
 
       <!-- Col A: Filter buttons -->
@@ -299,18 +299,21 @@
           <span v-if="loadingPages" class="ml-2 loading-spinner" />
         </div>
         <div class="flex-1 overflow-y-auto p-3 min-h-0">
-          <div v-if="viewPages.length === 0 && !loadingPages" class="empty-state">
-            <i class="bi bi-file-earmark-image text-3xl block mb-2" />
+          <div v-if="viewPages.length === 0 && loadingPages" class="grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))" aria-label="กำลังโหลดรายการภาพ">
+            <div v-for="n in 6" :key="n" class="border border-gray-200 rounded-lg overflow-hidden" aria-hidden="true">
+              <div class="h-28 animate-pulse motion-reduce:animate-none bg-gray-200" />
+              <div class="px-1 py-1"><div class="h-3 rounded bg-gray-100 animate-pulse motion-reduce:animate-none" /></div>
+            </div>
+          </div>
+          <div v-else-if="viewPages.length === 0" class="empty-state">
+            <FileTextIcon class="text-3xl block mb-2 text-gray-300" :animate-on-hover="true" animation="path" />
             <p class="text-sm">เลือกกลุ่มหรือรายการด้านซ้าย</p>
           </div>
           <div v-else class="grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))">
             <div v-for="(p, idx) in viewPages" :key="p.PAGENO"
               class="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-sky-400 hover:shadow-sm transition-all"
               @click="openViewer(idx)">
-              <img :src="`/api/image/${p.PAGENO}?ext=${p.EXTENSION||'jpg'}&thumb=1`"
-                loading="lazy" decoding="async"
-                class="w-full h-28 object-cover bg-gray-100" :alt="`หน้า ${p.PAGE}`"
-                @error="(e:any) => e.target.style.display='none'" />
+              <DocumentThumbnail :src="`/api/image/${p.PAGENO}?ext=${p.EXTENSION||'jpg'}&thumb=1`" :alt="`หน้า ${p.PAGE}`" />
               <div class="px-1 py-1 text-[10px] text-gray-400 text-center truncate">
                 หน้า {{ p.PAGE }} · {{ formatDate(p.CDATE) }}
               </div>
@@ -363,6 +366,8 @@ import { usePatientStore } from '@/stores/patient'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import { useDialog } from '@/composables/useDialog'
+import FileTextIcon from '@/components/animate-ui/icons/file-text.vue'
+import DocumentThumbnail from '@/components/common/DocumentThumbnail.vue'
 const { alert: dlgAlert } = useDialog()
 
 const route        = useRoute()
@@ -432,6 +437,8 @@ const viewPages     = ref<any[]>([])
 const activeGroup   = ref('')
 const activeTreat   = ref<number|null>(null)
 const expandedGroups = ref<Set<string>>(new Set())
+let treatsRequestId = 0
+let pagesRequestId = 0
 
 // Image viewer
 const viewerOpen = ref(false)
@@ -505,6 +512,12 @@ const viewerLabel = computed(() => {
 
 // Watch patientStore.viewerPatient — reload treats when patient/treat changes
 watch(() => patientStore.viewerPatient, async (patient) => {
+  treatsRequestId++
+  pagesRequestId++
+  loading.value = false
+  loadingPages.value = false
+  viewPages.value = []
+  viewerOpen.value = false
   if (patient) {
     await loadTreats(patient.PATID)
   } else {
@@ -515,6 +528,10 @@ watch(() => patientStore.viewerPatient, async (patient) => {
 }, { immediate: true })
 
 watch(() => activeFilter.value, () => {
+  pagesRequestId++
+  loadingPages.value = false
+  viewPages.value = []
+  viewerOpen.value = false
   expandedGroups.value = new Set()
   activeGroup.value = ''; activeTreat.value = null; viewPages.value = []
 })
@@ -713,6 +730,7 @@ const activeGroupName = computed(() => {
 })
 
 async function loadTreats(hn: string) {
+  const requestId = ++treatsRequestId
   loading.value = true
   allTreats.value = []; expandedGroups.value = new Set()
   activeGroup.value = ''; activeTreat.value = null; viewPages.value = []
@@ -728,33 +746,39 @@ async function loadTreats(hn: string) {
       })
       return { ...t, _formCodes: Object.keys(formCntMap), _formCntMap: formCntMap, _formNames: formNames }
     }))
-    allTreats.value = enhanced
+    if (requestId === treatsRequestId && patientStore.viewerPatient?.PATID === hn) allTreats.value = enhanced
   } catch (e) { console.error(e) }
-  finally { loading.value = false }
+  finally { if (requestId === treatsRequestId) loading.value = false }
 }
 
 async function selectGroup(g: TreatGroup) {
+  const requestId = ++pagesRequestId
+  const hn = patientStore.viewerPatient?.PATID || ''
+  const classFilter = activeFilter.value
   if (expandedGroups.value.has(g.formCode)) expandedGroups.value.delete(g.formCode)
   else expandedGroups.value.add(g.formCode)
   expandedGroups.value = new Set(expandedGroups.value)
   activeGroup.value = g.formCode; activeTreat.value = null
+  viewerOpen.value = false
   loadingPages.value = true; viewPages.value = []
   try {
-    const hn = patientStore.viewerPatient?.PATID || ''
-    const pages = await api.get('/viewer/pages', { params: { hn, formCode: g.formCode, classFilter: activeFilter.value } }).then(r => r.data)
-    viewPages.value = pages
+    const pages = await api.get('/viewer/pages', { params: { hn, formCode: g.formCode, classFilter } }).then(r => r.data)
+    if (requestId === pagesRequestId && patientStore.viewerPatient?.PATID === hn && activeFilter.value === classFilter) viewPages.value = pages
   } catch (e) { console.error(e) }
-  finally { loadingPages.value = false }
+  finally { if (requestId === pagesRequestId) loadingPages.value = false }
 }
 
 async function selectTreat(formCode: string, t: any) {
+  const requestId = ++pagesRequestId
+  const hn = patientStore.viewerPatient?.PATID || ''
   activeGroup.value = formCode; activeTreat.value = t.TREATNO
+  viewerOpen.value = false
   loadingPages.value = true; viewPages.value = []
   try {
     const pages = await api.get('/viewer/pages/treat', { params: { treatNo: t.TREATNO, formCode } }).then(r => r.data)
-    viewPages.value = pages
+    if (requestId === pagesRequestId && patientStore.viewerPatient?.PATID === hn) viewPages.value = pages
   } catch (e) { console.error(e) }
-  finally { loadingPages.value = false }
+  finally { if (requestId === pagesRequestId) loadingPages.value = false }
 }
 
 function openViewer(idx: number) { viewerIdx.value = idx; vZoom.value = 1; vRotate.value = 0; resetPan(); viewerOpen.value = true }
@@ -896,7 +920,11 @@ onMounted(async () => {
     wmOpacity.value = typeof res.data.opacity === 'number' ? res.data.opacity : 0.2
   } catch (e) { console.error(e) }
 })
-onUnmounted(() => document.removeEventListener('keydown', onKeydown))
+onUnmounted(() => {
+  treatsRequestId++
+  pagesRequestId++
+  document.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <style scoped>

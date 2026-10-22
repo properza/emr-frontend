@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-4 h-[calc(100vh-120px)] min-h-0"
+    class="scan-workspace grid gap-4 h-[calc(100vh-120px)] min-h-0"
     style="grid-template-columns:1.2fr 1.6fr 1.6fr; grid-template-rows:auto 1fr;"
   >
 
@@ -282,8 +282,8 @@
           <!-- HN -->
           <div class="flex-shrink-0">
             <label class="form-label">HN (รหัสผู้ป่วย) <span class="text-red-500">*</span></label>
-            <HnInputer ref="hnInputer" :is-sep="patientStore.hnConfig.hnSep === 'Y'"
-              @search="onHnSearch" @open-search="showSearch = true" @clear="clearPatient" />
+            <HnInputer ref="hnInputer" :is-sep="patientStore.hnConfig.hnSep === 'Y'" :recent-patient="patientStore.recentPatient"
+              @search="onHnSearch" @open-search="showSearch = true" @clear="clearPatient" @recent="reloadRecent" />
             <PatientInfoBox :patient="patientStore.selectedPatient" :hn="lastHn"
               :not-found="notFound" @clear="clearPatient" />
           </div>
@@ -756,6 +756,12 @@ async function onHnSearch(hn: string) {
   else notFound.value = true
 }
 
+function reloadRecent() {
+  if (!patientStore.recentPatient) return
+  hnInputer.value?.setValue(patientStore.recentPatient.PATID)
+  void onHnSearch(patientStore.recentPatient.PATID)
+}
+
 function onPatientSelected(p: Patient) {
   hnInputer.value?.setValue(p.PATID)
   lastHn.value = p.PATID.trim()
@@ -1099,17 +1105,17 @@ async function upload() {
 .treat-th {
   background: var(--cis-primary, #2563a8);
   color: white;
-  padding: 0.4rem 0.4rem;
+  padding: 0.5rem 0.55rem;
   text-align: left;
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   font-weight: 600;
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
 .treat-td {
-  padding: 0.4rem 0.4rem;
+  padding: 0.4rem 0.55rem;
   border-bottom: 1px solid #eef2f7;
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   color: var(--cis-text-primary, #1e293b);
 }
 

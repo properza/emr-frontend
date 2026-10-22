@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-4 h-[calc(100vh-115px)]">
+  <div class="viewer-print-workspace viewer-workspace flex gap-4 h-[calc(100vh-115px)]">
 
     <!-- Left panel -->
     <div class="card flex flex-col w-80 flex-shrink-0 min-h-0">

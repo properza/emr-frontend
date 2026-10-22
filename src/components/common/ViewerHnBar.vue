@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-2">
+  <div class="viewer-hn-bar flex items-center gap-2">
     <!-- Patient info (when selected) -->
     <div v-if="patientStore.viewerPatient" class="flex items-center gap-2 text-gray-700">
       <div class="flex flex-col leading-tight">
@@ -32,6 +32,9 @@
         </template>
         <button class="btn-outline px-2 py-1 text-xs gap-1 whitespace-nowrap" @click="showSearch = true" title="ค้นหา">
           <i class="bi bi-person-search" /> ค้นหา
+        </button>
+        <button v-if="patientStore.recentPatient" class="btn-outline px-2 py-1 text-xs gap-1 whitespace-nowrap" @click="onPatientSelected(patientStore.recentPatient)">
+          <i class="bi bi-clock-history" /> ล่าสุด
         </button>
       </div>
 
@@ -163,6 +166,7 @@ async function searchHn(hn: string) {
   } finally { searching.value = false }
 }
 
+
 async function onPatientSelected(p: Patient) {
   if (patientStore.hnConfig.hnSep === 'Y') {
     yearValue.value = p.PATID.substring(0, 2)
@@ -219,8 +223,9 @@ function formatDate(d: string) {
 </script>
 
 <style scoped>
-.treat-th { background: #1a4f7a; color: white; padding: 0.4rem 0.5rem; text-align: left; font-size: 0.7rem; font-weight: 500; white-space: nowrap; }
-.treat-td { padding: 0.3rem 0.5rem; border-bottom: 1px solid #f3f4f6; font-size: 0.7rem; }
+.treat-th { background: #1a4f7a; color: white; padding: 0.55rem 0.6rem; text-align: left; font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
+.treat-td { padding: 0.45rem 0.6rem; border-bottom: 1px solid #f3f4f6; font-size: 0.875rem; }
+.viewer-hn-bar .form-input { font-size: .9375rem; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

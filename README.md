@@ -35,6 +35,11 @@ npm install
 npm run dev
 ```
 
+The development server proxies `/api` requests to the backend URL in
+`.env.development` (`API_BASE_URL`). Create `.env.development.local` to override
+that URL on your machine, then restart the development server for changes to
+take effect.
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
